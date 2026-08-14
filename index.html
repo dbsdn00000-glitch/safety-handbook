@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>현장안전 핸드북</title>
+
+<!-- PWA 설정 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16232E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="안전핸드북">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #E8F4FC;
+    --bg-elev: #FFFFFF;
+    --bg-elev-2: #DAEBF7;
+    --line: #C4DFEF;
+    --text: #16232E;
+    --text-muted: #5D7182;
+    --yellow: #B45309;
+    --orange: #C2410C;
+    --red: #B91C1C;
+    --green: #15803D;
+    --blue: #1D4ED8;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 14px;
+  }
+
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    background: #0B0C0E;
+    font-family: var(--font-body);
+    color: var(--text);
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+  }
+
+  /* ===== 앱 프레임 ===== */
+  #app-frame{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background: var(--bg);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.5);
+    overflow:hidden;
+  }
+  @media (min-width:520px){
+    body{ padding: 28px 0; }
+    #app-frame{ min-height: calc(100vh - 56px); border-radius: 28px; border:1px solid var(--line); }
+  }
+
+  /* ===== 헤이저드 스트라이프 (시그니처 요소) ===== */
+  .hazard-strip{
+    height:6px;
+    width:100%;
+    background: repeating-linear-gradient(
+      -45deg,
+      #FFC300 0 14px,
+      #17181B 14px 28px
+    );
+    flex-shrink:0;
+  }
+
+  /* ===== 헤더 ===== */
+  header{
+    padding: 18px 18px 14px;
+    background: var(--bg);
+    position: sticky;
+    top:0;
+    z-index: 10;
+    border-bottom: 1px solid var(--line);
+  }
+  .header-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .back-btn{
+    width:36px; height:36px;
+    border-radius: 10px;
+    background: var(--bg-elev-2);
+    border:1px solid var(--line);
+    color: var(--text);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+  .back-btn svg{width:18px; height:18px;}
+  .header-titles{ min-width:0; flex:1; }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--yellow);
+    text-transform: uppercase;
+    margin:0 0 2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  h1.page-title{
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 26px;
+    line-height:1.05;
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+  .home-title{
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 30px;
+    margin:0;
+    letter-spacing: -0.01em;
+  }
+  .home-sub{
+    font-size:13px;
+    color: var(--text-muted);
+    margin:4px 0 0;
+    line-height:1.5;
+  }
+
+  main{
+    flex:1;
+    overflow-y:auto;
+    padding: 18px 18px 100px;
+  }
+  main.home-main{ padding: 0 0 100px; }
+
+  /* ===== 홈 히어로(전체 배경사진) ===== */
+  .hero{
+    position:relative;
+    width:100%;
+    height: 340px;
+    background-size: cover;
+    background-position: center 62%;
+    display:flex;
+    align-items:flex-end;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(180deg,
+      rgba(11,12,14,0.15) 0%,
+      rgba(11,12,14,0.35) 45%,
+      rgba(20,22,26,0.92) 88%,
+      var(--bg) 100%);
+  }
+  .hero-content{
+    position:relative;
+    z-index:2;
+    padding: 16px 18px 28px;
+  }
+  .hero .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color: #FFC300;
+  }
+  .hero .eyebrow::before{
+    content:"";
+    width:6px; height:6px;
+    background: #FFC300;
+    border-radius:50%;
+    display:inline-block;
+  }
+  .hero .home-title{
+    color: #FFFFFF;
+    font-size: 34px;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+  .hero .home-sub{
+    color: #EAEAE6;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+  .home-body{
+    padding: 0 18px;
+  }
+
+  /* ===== 홈: 카테고리 카드 ===== */
+  .cat-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .cat-card{
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 14px;
+    cursor:pointer;
+    text-align:left;
+    display:flex;
+    flex-direction:column;
+    gap: 26px;
+    min-height: 128px;
+    position:relative;
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .cat-card:active{ transform: scale(0.97); }
+  .cat-card:hover{ border-color: var(--accent); }
+  .cat-icon{
+    width:38px; height:38px;
+    border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--accent-bg);
+    color: var(--accent);
+  }
+  .cat-icon svg{ width:20px; height:20px; }
+  .cat-name{
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight:700;
+    line-height:1.15;
+  }
+  .cat-count{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    position:absolute;
+    top:14px; right:14px;
+  }
+
+  .disclaimer{
+    margin-top:22px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(255,195,0,0.07);
+    border: 1px solid rgba(255,195,0,0.25);
+    font-size: 12px;
+    line-height:1.6;
+    color: var(--text-muted);
+  }
+  .disclaimer b{ color: var(--yellow); }
+
+  /* ===== 카테고리 상세: 하위 항목 리스트 ===== */
+  .item-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top: 16px;
+  }
+  .item-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background: var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px 14px;
+    cursor:pointer;
+    text-align:left;
+  }
+  .item-row:active{ background: var(--bg-elev-2); }
+  .item-icon{
+    width:34px; height:34px;
+    border-radius:9px;
+    background: var(--accent-bg);
+    color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .item-icon svg{ width:17px; height:17px; }
+  .item-text{ min-width:0; flex:1; }
+  .item-title{
+    font-weight:600;
+    font-size:15px;
+    margin:0 0 2px;
+  }
+  .item-summary{
+    font-size:12.5px;
+    color:var(--text-muted);
+    margin:0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .chevron{ color: var(--text-muted); flex-shrink:0; }
+  .chevron svg{ width:16px; height:16px; }
+
+  /* ===== 상세 화면 ===== */
+  .detail-image{
+    width:100%;
+    aspect-ratio: 16/10;
+    border-radius: var(--radius);
+    border: 1px dashed var(--line);
+    background: var(--bg-elev);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    overflow:hidden;
+  }
+  .detail-image img{ width:100%; height:100%; object-fit:cover; }
+  .detail-image svg{ width:30px; height:30px; opacity:0.6; }
+  .detail-image span{ font-size:12px; font-family: var(--font-mono); }
+
+  .section-block{ margin-top: 22px; }
+  .section-heading{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: 18px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0 0 10px;
+  }
+  .section-heading::before{
+    content:"";
+    width:4px; height:16px;
+    background: var(--accent);
+    border-radius:2px;
+    display:inline-block;
+  }
+  ul.bullets{
+    margin:0; padding:0;
+    list-style:none;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  ul.bullets li{
+    font-size: 14px;
+    line-height:1.6;
+    color: #34495A;
+    padding-left: 16px;
+    position:relative;
+  }
+  ul.bullets li::before{
+    content:"";
+    width:5px; height:5px;
+    border-radius:50%;
+    background: var(--text-muted);
+    position:absolute;
+    left:0; top:9px;
+  }
+  ul.bullets li b{ color: var(--text); }
+  ul.bullets li.warn{ color: var(--orange); }
+  ul.bullets li.warn::before{ background: var(--orange); }
+  ul.bullets li.warn b{ color: var(--orange); }
+
+  .step-list{
+    margin:0; padding:0;
+    list-style:none;
+    display:flex; flex-direction:column; gap:0;
+  }
+  .step-list li{
+    display:flex; gap:12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .step-list li:last-child{ border-bottom:none; }
+  .step-num{
+    font-family: var(--font-mono);
+    font-weight:700;
+    font-size:13px;
+    color: var(--accent);
+    background: var(--accent-bg);
+    width:24px; height:24px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .step-body{ font-size:14px; line-height:1.6; color:#34495A; padding-top:2px; }
+  .step-body b{ color:var(--text); }
+
+  .metric-table{
+    width:100%;
+    border-collapse:collapse;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    margin-top:2px;
+  }
+  .metric-table th, .metric-table td{
+    text-align:left;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--line);
+  }
+  .metric-table th{
+    color: var(--text-muted);
+    font-weight:500;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.04em;
+  }
+  .metric-table td.val{ color: var(--yellow); font-weight:700; }
+  .metric-table td.val.danger{ color: var(--red); }
+
+  /* ===== 편집 안내 카드 (하위항목 목록 화면 하단) ===== */
+  .edit-hint{
+    margin-top:22px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px dashed var(--line);
+    font-size: 12px;
+    line-height:1.6;
+    color: var(--text-muted);
+  }
+
+  /* ===== 긴급신고 버튼 ===== */
+  .sos-btn{
+    position:absolute;
+    right:18px; bottom:18px;
+    width:60px; height:60px;
+    border-radius:50%;
+    background: var(--red);
+    color:#fff;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-decoration:none;
+    box-shadow: 0 6px 18px rgba(232,56,79,0.45);
+    z-index: 20;
+    font-family: var(--font-mono);
+    animation: pulse 2.4s infinite;
+  }
+  .sos-btn svg{ width:18px; height:18px; margin-bottom:1px; }
+  .sos-btn span{ font-size:10px; font-weight:700; letter-spacing:0.03em; }
+  @keyframes pulse{
+    0%{ box-shadow: 0 0 0 0 rgba(232,56,79,0.5); }
+    70%{ box-shadow: 0 0 0 14px rgba(232,56,79,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(232,56,79,0); }
+  }
+
+  ::-webkit-scrollbar{ width:0; }
+</style>
+</head>
+<body>
+
+<div id="app-frame">
+  <div class="hazard-strip"></div>
+  <header id="header"></header>
+  <main id="main"></main>
+  <a class="sos-btn" href="tel:119" aria-label="119 긴급신고">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    <span>119</span>
+  </a>
+</div>
+
+<script>
+/* =====================================================================
+   📌 데이터 영역 — 이 부분만 수정하면 앱 내용이 전부 바뀝니다.
+   =====================================================================
+   구조: CATEGORIES = [ 카테고리, 카테고리, ... ]
+
+   [카테고리 하나 추가하는 법]
+   아래 배열 맨 끝에 { } 객체를 하나 복사해서 붙여넣고 내용만 바꾸면
+   메인 화면에 카드가 자동으로 하나 더 생깁니다.
+
+   category 객체 = {
+     id        : 'category-id-en'   (다른 카테고리와 겹치지 않는 영문 id)
+     name      : '카테고리 이름'      (카드에 표시)
+     icon      : 'ICONS.xxx'         (아래 ICONS 목록 중 하나, 또는 새로 추가)
+     accent    : '#FFC300'           (이 카테고리 전용 포인트 색상)
+     items     : [ 하위항목, 하위항목, ... ]
+   }
+
+   [하위 항목(눌렀을 때 상세가 열리는 것) 추가하는 법]
+   items 배열 안에 { } 객체 하나를 추가합니다.
+
+   item 객체 = {
+     id      : 'item-id-en'
+     title   : '항목 이름'            (리스트에 표시)
+     summary : '한줄 요약'            (리스트에 회색 글씨로 표시)
+     icon    : 'ICONS.xxx'
+     image   : null   또는  '이미지 URL'
+               → null이면 "사진 준비중" placeholder 박스가 표시됩니다.
+               → 실제 사진이 생기면 image: 'https://...' 처럼 URL을 넣거나
+                 data:image/png;base64,... 형태의 base64 문자열을 넣어도 됩니다.
+     body    : { type:'bullets' | 'steps' | 'metrics', ... }  ← 아래 3가지 형식 중 선택
+
+     ── body 형식 1) 목록형 (bullets) ──────────────────────
+     body: {
+       type: 'bullets',
+       sections: [
+         { heading:'섹션 제목', bullets: ['내용1', '내용2', {text:'경고 내용', warn:true} ] }
+       ]
+     }
+
+     ── body 형식 2) 순서형 (steps) — 실제 절차/순서가 있을 때 ──
+     body: {
+       type: 'steps',
+       sections: [
+         { heading:'섹션 제목', steps: ['1단계 설명', '2단계 설명'] }
+       ]
+     }
+
+     ── body 형식 3) 수치 기준표 (metrics) ─────────────────
+     body: {
+       type: 'metrics',
+       sections: [
+         { heading:'섹션 제목',
+           rows: [ {label:'항목', value:'수치', danger:false} ] }
+       ]
+     }
+
+     ※ 세 형식을 섞어서 sections 배열 안에 여러 종류를 넣는 것도 가능합니다.
+       (각 section 객체에 type을 넣으면 상위 body.type 대신 그 section에만 적용됩니다)
+   =====================================================================
+*/
+
+// ⬇️ 홈 화면 배경사진. 다른 사진으로 바꾸려면 이 data URL 전체를 교체하거나,
+//    image: 'images/파일명.jpg' 형태의 짧은 경로로 바꿔서 사용해도 됩니다.
+const HOME_BG_IMAGE = "images/그림1.jpg";
+
+const ICONS = {
+  manhole: `<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 6v6l4 2"/>`,
+  permit: `<path d="M9 2h6l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M9 2v5h6"/><path d="M9 13h6M9 17h6"/>`,
+  folder: `<path d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/>`,
+  gear: `<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>`,
+  procedure: `<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>`,
+  gauge: `<path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/><path d="M12 12l4-3"/><path d="M12 8v0"/>`,
+  location: `<path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>`,
+  mask: `<path d="M4 13c0-4 3.5-8 8-8s8 4 8 8-3 5-8 5-8-1-8-5z"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/>`,
+  tripod: `<path d="M12 3v10"/><path d="M12 13L5 21"/><path d="M12 13l7 8"/><path d="M12 13L7 8"/><path d="M12 13l5-5"/>`,
+  wind: `<path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/><path d="M17.7 7.7A2.5 2.5 0 1 1 19.5 12H2"/>`,
+  cloud: `<path d="M17.5 19a4.5 4.5 0 0 0 0-9 6 6 0 0 0-11.6 1.5A4 4 0 0 0 6.5 19h11z"/>`,
+  doc: `<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6M9 9h1"/>`,
+  camera: `<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>`,
+};
+
+const CATEGORIES = [
+  // ───────────────────────────── 1. 밀폐공간작업 ─────────────────────────────
+  {
+    id: 'confined-space',
+    name: '밀폐공간작업',
+    icon: 'manhole',
+    accent: '#B45309',
+    items: [
+      {
+        id: 'cs-procedure',
+        title: '작업절차',
+        summary: '허가 발급부터 작업 종료까지 표준 절차',
+        icon: 'procedure',
+        image: null,
+        body: {
+          type: 'steps',
+          sections: [
+            { heading: '작업 전', steps: [
+              '밀폐공간 작업허가서 작성 및 관리감독자 승인',
+              '산소·유해가스 농도 측정 (작업 시작 직전 실시)',
+              '환기 실시: 자연환기 또는 강제환기 후 재측정',
+              '출입인원 명단 확인 및 감시인 배치',
+              '구조장비(삼각대, 안전대, 대피용 로프 등) 배치 확인',
+              '통신수단(무전기 등) 점검'
+            ]},
+            { heading: '작업 중', steps: [
+              '감시인은 작업 전 과정 상시 배치, 자리 이탈 금지',
+              '정기적 가스농도 재측정 (사업장 기준 주기 준수)',
+              '이상 징후(어지러움, 호흡곤란 등) 발생 시 즉시 대피',
+              '출입 인원 수시 확인 (출입대장 기록)'
+            ]},
+            { heading: '작업 종료 후', steps: [
+              '전원 퇴장 확인 및 인원 점검',
+              '장비 회수 및 이상 유무 확인',
+              '작업허가서 종료 서명 및 보관'
+            ]},
+          ]
+        }
+      },
+      {
+        id: 'cs-metrics',
+        title: '측정값 기준',
+        summary: '산소농도·가스농도 허용 기준',
+        icon: 'gauge',
+        image: null,
+        body: {
+          type: 'metrics',
+          sections: [
+            { heading: '산소농도 (O₂)', rows: [
+              { label: '정상 범위', value: '18.0 ~ 23.5 %', danger:false },
+              { label: '산소결핍 (위험)', value: '18.0 % 미만', danger:true },
+              { label: '산소과잉 (위험)', value: '23.5 % 초과', danger:true },
+            ]},
+            { heading: '가연성가스', rows: [
+              { label: '작업 가능', value: 'LEL 10 % 미만', danger:false },
+              { label: '주의·재환기', value: 'LEL 10~25 %', danger:true },
+              { label: '즉시 대피', value: 'LEL 25 % 이상', danger:true },
+            ]},
+            { heading: '유해가스 (예시)', rows: [
+              { label: '황화수소(H₂S)', value: '10 ppm 이하 권장', danger:false },
+              { label: '일산화탄소(CO)', value: '30 ppm 이하 권장', danger:false },
+            ]},
+          ]
+        }
+      },
+      {
+        id: 'cs-zones',
+        title: '밀폐공간 구역',
+        summary: '사업장 내 밀폐공간 지정 목록',
+        icon: 'location',
+        image: null,
+        body: {
+          type: 'bullets',
+          sections: [
+            { heading: '지정 구역 (예시 — 현장에 맞게 교체)', bullets: [
+              '저장탱크 A동 (지하 1층)',
+              '오·폐수 처리조',
+              '맨홀 / 지하 피트',
+              '보일러실 집수정',
+            ]},
+            { heading: '안내', bullets: [
+              { text: '이 항목은 예시입니다. 실제 사업장의 밀폐공간 목록·도면으로 교체해서 사용하세요.', warn:true },
+            ]},
+          ]
+        }
+      },
+      {
+        id: 'cs-equipment-status',
+        title: '장비류 위치 및 현황',
+        summary: '보유 장비 보관 위치·수량',
+        icon: 'location',
+        image: null,
+        body: {
+          type: 'bullets',
+          sections: [
+            { heading: '보관 위치 (예시 — 현장에 맞게 교체)', bullets: [
+              '복합가스측정기 2대 — 안전관리실 캐비닛',
+              '송기마스크 세트 — 자재창고 A',
+              '구조용 삼각대 1식 — 현장사무소 앞 보관함',
+            ]},
+            { heading: '안내', bullets: [
+              { text: '실제 보관 위치, 수량, 최근 점검일을 입력해서 사용하세요.', warn:true },
+            ]},
+          ]
+        }
+      },
+    ]
+  },
+
+  // ───────────────────────────── 2. 허가서 작성방법 ─────────────────────────────
+  {
+    id: 'permit',
+    name: '허가서 작성방법',
+    icon: 'permit',
+    accent: '#4338CA',
+    items: [
+      {
+        id: 'permit-howto',
+        title: '작성방법',
+        summary: '밀폐공간 출입 작업허가서 작성 절차',
+        icon: 'procedure',
+        image: null,
+        body: {
+          type: 'steps',
+          sections: [
+            { heading: '허가서 작성 순서', steps: [
+              '작업 개요 기재: 작업일시, 장소, 작업내용, 작업인원',
+              '위험성평가 결과 반영: 예상 위험요인 및 대책 기재',
+              '측정값 기재: 산소·가스 농도 측정 결과 기록',
+              '보호구·장비 체크리스트 확인 후 서명',
+              '감시인·작업자·관리감독자 서명',
+              '작업 종료 후 결과 기재 및 보관(사업장 규정에 따른 보관기간 준수)'
+            ]},
+          ]
+        }
+      },
+    ]
+  },
+
+  // ───────────────────────────── 3. 안전서류 가이드 ─────────────────────────────
+  {
+    id: 'safety-docs',
+    name: '안전서류 가이드',
+    icon: 'folder',
+    accent: '#15803D',
+    items: [
+      {
+        id: 'docs-guide',
+        title: '가이드',
+        summary: '필요 서류 종류와 관리 방법',
+        icon: 'doc',
+        image: null,
+        body: {
+          type: 'bullets',
+          sections: [
+            { heading: '필수 서류', bullets: [
+              '밀폐공간 작업허가서',
+              '위험성평가서',
+              'TBM(작업 전 안전점검회의) 일지',
+              '안전교육 이수 대장',
+              '가스측정 기록지',
+            ]},
+            { heading: '관리 방법', bullets: [
+              '서류는 작업일 기준으로 편철하여 보관',
+              '전자문서 보관 시 백업본 별도 관리',
+              '보관기간은 사업장 규정 및 관련 법령 기준 준수',
+            ]},
+          ]
+        }
+      },
+    ]
+  },
+
+  // ───────────────────────────── 4. 밀폐공간 안전장비류 사용방법 ─────────────────────────────
+  {
+    id: 'equipment',
+    name: '밀폐공간 안전장비류 사용방법',
+    icon: 'gear',
+    accent: '#C2410C',
+    items: [
+      {
+        id: 'eq-air-mask',
+        title: '송기마스크',
+        summary: '착용법과 사용 전 점검사항',
+        icon: 'mask',
+        image: null,
+        body: {
+          type: 'steps',
+          sections: [
+            { heading: '사용 전 점검', steps: [
+              '호스 연결부 누기(새는 곳) 여부 확인',
+              '공기공급원(팬 또는 압축공기) 작동 상태 확인',
+              '마스크 안면부 밀착 상태 확인',
+            ]},
+            { heading: '착용 순서', steps: [
+              '마스크를 착용하고 스트랩으로 얼굴에 밀착 고정',
+              '공기 공급을 시작하고 호흡 이상 유무 확인',
+              '호스가 꼬이거나 눌리지 않도록 정리',
+            ]},
+          ]
+        }
+      },
+      {
+        id: 'eq-tripod',
+        title: '구조용 삼각대 SET',
+        summary: '설치 방법과 구조 절차',
+        icon: 'tripod',
+        image: null,
+        body: {
+          type: 'steps',
+          sections: [
+            { heading: '설치 방법', steps: [
+              '맨홀·출입구 중심에 다리 3개를 균등하게 펼쳐 설치',
+              '권상기(윈치)를 삼각대 상단에 결합',
+              '로프·후크 상태 및 결합부 잠금 확인',
+            ]},
+            { heading: '구조 시 사용', steps: [
+              '작업자 안전대와 후크를 확실히 연결',
+              '이상 발생 시 권상기로 신속히 인양',
+              '사용 후 각 부품 손상 여부 점검 후 보관',
+            ]},
+          ]
+        }
+      },
+      {
+        id: 'eq-multi-gas',
+        title: '복합가스 측정기 사용법',
+        summary: '산소·가연성가스·유해가스 동시 측정',
+        icon: 'gauge',
+        image: null,
+        body: {
+          type: 'steps',
+          sections: [
+            { heading: '사용 전', steps: [
+              '배터리 잔량 확인',
+              '전원을 켠 후 자동 영점(캘리브레이션) 완료까지 대기',
+              '센서 유효기간 및 최근 교정일자 확인',
+            ]},
+            { heading: '측정 방법', steps: [
+              '측정기를 밀폐공간 입구에서 먼저 측정 (직접 투입 또는 흡입호스 사용)',
+              '상부·중간·하부 등 높이를 나누어 측정',
+              '경보 발생 시 즉시 작업 중지 및 대피',
+            ]},
+          ]
+        }
+      },
+      {
+        id: 'eq-co2',
+        title: '이산화탄소 측정기 사용법',
+        summary: 'CO₂ 농도 측정 및 대응 기준',
+        icon: 'cloud',
+        image: null,
+        body: {
+          type: 'bullets',
+          sections: [
+            { heading: '사용법', bullets: [
+              '측정기 전원을 켠 후 안정화될 때까지 대기',
+              '측정하려는 공간에 센서 부분을 노출',
+              '수치가 안정된 후 값을 기록',
+            ]},
+            { heading: '기준 (참고)', bullets: [
+              '일반적으로 5,000 ppm 이하 권장 (사업장 기준 확인 필요)',
+              { text: '수치가 지속적으로 상승하면 환기 후 재측정', warn:true },
+            ]},
+          ]
+        }
+      },
+    ]
+  },
+];
+
+/* ===================================================================== */
+
+// state
+let state = { view: 'home', catId: null, itemId: null };
+
+function findCat(id){ return CATEGORIES.find(c => c.id === id); }
+function findItem(cat, id){ return cat.items.find(i => i.id === id); }
+
+function icon(key){ return ICONS[key] || ICONS.doc; }
+
+function go(view, catId, itemId){
+  state = { view, catId: catId||null, itemId: itemId||null };
+  render();
+  document.getElementById('main').scrollTop = 0;
+}
+
+function render(){
+  const header = document.getElementById('header');
+  const main = document.getElementById('main');
+
+  if(state.view === 'home'){
+    header.innerHTML = '';
+    main.className = 'home-main';
+
+    main.innerHTML = `
+      <div class="hero" style="background-image:url('${HOME_BG_IMAGE}')">
+        <div class="hero-content">
+          <p class="eyebrow">대전하수처리장</p>
+          <h1 class="home-title">현장안전 핸드북</h1>
+          <p class="home-sub">카테고리를 눌러 산업안전 정보를 확인하세요</p>
+        </div>
+      </div>
+      <div class="home-body">
+        <div class="cat-grid">
+          ${CATEGORIES.map(c => `
+            <button class="cat-card" style="--accent:${c.accent}; --accent-bg:${hexToRgba(c.accent,0.14)}" onclick="go('category','${c.id}')">
+              <span class="cat-count">${c.items.length}개 항목</span>
+              <span class="cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon(c.icon)}</svg></span>
+              <span class="cat-name">${c.name}</span>
+            </button>
+          `).join('')}
+        </div>
+        <div class="disclaimer"><b>안내.</b> 본 앱의 수치·절차는 일반적인 참고 자료입니다. 실제 작업 시에는 최신 산업안전보건 법령 및 사업장 자체 기준을 반드시 확인하세요.</div>
+      </div>
+    `;
+    return;
+  }
+  main.className = '';
+
+  const cat = findCat(state.catId);
+
+  if(state.view === 'category'){
+    header.innerHTML = headerBar(cat.name, '대전하수처리장', `go('home')`);
+    main.innerHTML = `
+      <div class="item-list">
+        ${cat.items.map(it => `
+          <button class="item-row" style="--accent:${cat.accent}; --accent-bg:${hexToRgba(cat.accent,0.14)}" onclick="go('detail','${cat.id}','${it.id}')">
+            <span class="item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon(it.icon)}</svg></span>
+            <span class="item-text">
+              <p class="item-title">${it.title}</p>
+              <p class="item-summary">${it.summary||''}</p>
+            </span>
+            <span class="chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="edit-hint">✏️ 새 항목은 코드 상단 <b>CATEGORIES</b> 데이터의 해당 카테고리 <b>items</b> 배열에 객체 하나만 추가하면 자동으로 이 목록에 나타납니다.</div>
+    `;
+    return;
+  }
+
+  if(state.view === 'detail'){
+    const item = findItem(cat, state.itemId);
+    header.innerHTML = headerBar(item.title, cat.name, `go('category','${cat.id}')`);
+
+    const imageBlock = item.image
+      ? `<div class="detail-image"><img src="${item.image}" alt="${item.title}"></div>`
+      : `<div class="detail-image">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icon('camera')}</svg>
+           <span>사진 준비중 — image 필드에 URL 추가 시 표시됩니다</span>
+         </div>`;
+
+    main.innerHTML = `
+      ${imageBlock}
+      ${renderBody(item.body, cat.accent)}
+    `;
+    return;
+  }
+}
+
+function headerBar(title, eyebrow, backAction){
+  return `
+    <div class="header-row">
+      <button class="back-btn" onclick="${backAction}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="header-titles">
+        <p class="eyebrow">${eyebrow}</p>
+        <h1 class="page-title">${title}</h1>
+      </div>
+    </div>`;
+}
+
+function renderBody(body, accent){
+  if(!body || !body.sections) return '';
+  return body.sections.map(sec => {
+    const type = sec.type || body.type;
+    let inner = '';
+    if(type === 'bullets'){
+      inner = `<ul class="bullets">${sec.bullets.map(b => {
+        const isObj = typeof b === 'object';
+        const text = isObj ? b.text : b;
+        const warn = isObj && b.warn;
+        return `<li class="${warn?'warn':''}">${text}</li>`;
+      }).join('')}</ul>`;
+    } else if(type === 'steps'){
+      inner = `<ol class="step-list">${sec.steps.map((s,i) => `
+        <li><span class="step-num" style="color:${accent}; background:${hexToRgba(accent,0.15)}">${i+1}</span><span class="step-body">${s}</span></li>
+      `).join('')}</ol>`;
+    } else if(type === 'metrics'){
+      inner = `<table class="metric-table"><tbody>${sec.rows.map(r => `
+        <tr><td>${r.label}</td><td class="val ${r.danger?'danger':''}">${r.value}</td></tr>
+      `).join('')}</tbody></table>`;
+    }
+    return `<div class="section-block"><h2 class="section-heading">${sec.heading}</h2>${inner}</div>`;
+  }).join('');
+}
+
+function hexToRgba(hex, alpha){
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16);
+  const g = parseInt(h.substring(2,4),16);
+  const b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+render();
+</script>
+<script>
+  // PWA: 서비스워커 등록 (오프라인 지원 + 홈 화면에 추가 가능하게 함)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+</script>
+</body>
+</html>
